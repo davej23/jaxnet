@@ -53,11 +53,6 @@ def update_gradients(params: Parameters, x: Array, y: Array, learning_rate: floa
     return loss, [(w - learning_rate * dw, b - learning_rate * db) for (w, b), (dw, db) in zip(params, grads)]
 
 
-def create_model(n_neurons: list[int]) -> Parameters:
-    params = initialise_params(n_neurons)
-    return params
-
-
 if __name__ == "__main__":
 
     EPOCHS = 20
@@ -72,7 +67,7 @@ if __name__ == "__main__":
     y_train = [y_train[BS*i:BS*(i+1)] for i in range(y_train.shape[0]//BS)]
 
     # Initialise parameters
-    params = create_model([784, 512, 128, 64, 10])
+    params = initialise_params([784, 512, 128, 64, 10])
 
     # Train
     for epoch in range(EPOCHS):
