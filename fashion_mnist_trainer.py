@@ -1,22 +1,9 @@
-import gzip
-import requests
-
 import jax.numpy as jnp
 from jax import random, grad, jit, Array
+from fashion_mnist import load_fashion_mnist_dataset
 
 
 Parameters = list[tuple[Array, Array]]
-
-
-def load_fashion_mnist_dataset() -> tuple["jnp.array", "jnp.array"]:
-    images_url = "https://github.com/zalandoresearch/fashion-mnist/raw/master/data/fashion/train-images-idx3-ubyte.gz"
-    labels_url = "https://github.com/zalandoresearch/fashion-mnist/raw/master/data/fashion/train-labels-idx1-ubyte.gz"
-
-    images = jnp.frombuffer(gzip.decompress(requests.get(images_url, timeout=30).content), dtype=jnp.uint8, offset=16)
-    labels = jnp.frombuffer(gzip.decompress(requests.get(labels_url, timeout=30).content), dtype=jnp.uint8, offset=8)
-    images = jnp.reshape(images, (60000, 784)).astype(jnp.float32)
-    labels = jnp.array(labels[:, None] == jnp.arange(10), jnp.float32)
-    return images, labels
 
 
 def initialise_params(n_neurons: list[int]) -> Parameters:
@@ -55,7 +42,7 @@ def update_gradients(params: Parameters, x: Array, y: Array, learning_rate: floa
 
 if __name__ == "__main__":
 
-    EPOCHS = 20
+    EPOCHS = 50
     LEARNING_RATE = 0.01
 
     # Load Fashion MNIST dataset
@@ -80,4 +67,4 @@ if __name__ == "__main__":
 
     # Test
     predictions = linear_forward_pass(params, jnp.concatenate(x_train))
-    print(f"Accuracy: {(jnp.argmax(predictions, axis=1) == jnp.argmax(jnp.concatenate(y_train), axis=1)).sum()/len(predictions)}")
+    print(f"Accuracy: {(jnp.mean(jnp.argmax(predictions, axis=1) == jnp.argmax(jnp.concatenate(y_train), axis=1)))}")
